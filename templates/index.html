@@ -1,0 +1,106 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Shrnk | URL Shortener</title>
+    
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    
+    <link rel="stylesheet" href="/static/style.css">
+    
+    <link rel="icon" type="image/png" href="{{ url_for('static', filename='favicon.png') }}">
+</head>
+<body>
+
+    <div class="container">
+        
+        <!-- Branding Header -->
+        <div class="header">
+            <div class="logo">
+                <svg xmlns="http://www.w3.org/2000/svg" width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"></path>
+                    <path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"></path>
+                </svg>
+                <h1>Shrnk</h1>
+            </div>
+            <p class="subtitle">Transform long links into clean, shareable URLs.</p>
+        </div>
+
+        <!-- Main Form -->
+        <form action="/shorten" method="POST">
+            <div class="input-group">
+                <input 
+                    type="url" 
+                    name="url" 
+                    placeholder="Paste your long URL here..." 
+                    required
+                    autocomplete="off"
+                >
+            </div>
+            <button type="submit">Shorten Link</button>
+        </form>
+
+        <!-- Success Result -->
+        {% if short_url %}
+            <div class="result-card">
+                <div class="result-header">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path><polyline points="22 4 12 14.01 9 11.01"></polyline></svg>
+                    <p>Ready to share!</p>
+                </div>
+                
+                <div class="short-url-box">
+                    <a href="{{ short_url }}" target="_blank" id="shortenedLink">{{ short_url }}</a>
+                    
+                    <!-- NEW: Copy Button -->
+                    <button class="copy-btn" onclick="copyToClipboard('{{ short_url }}')" aria-label="Copy URL" title="Copy to clipboard">
+                        <svg id="copyIcon" xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect>
+                            <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path>
+                        </svg>
+                    </button>
+                </div>
+            </div>
+        {% endif %}
+
+        <!-- Error State -->
+        {% if error %}
+            <div class="error-card">
+                <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"></circle><line x1="12" y1="8" x2="12" y2="12"></line><line x1="12" y1="16" x2="12.01" y2="16"></line></svg>
+                <p>{{ error }}</p>
+            </div>
+        {% endif %}
+
+    </div>
+
+    <a class="email-link" href="mailto:vardhineedi.tharak@gmail.com">vardhineedi.tharak@gmail.com</a>
+
+    <!-- NEW: JavaScript for Copy Functionality -->
+    <script>
+        function copyToClipboard(textToCopy) {
+            // Use the modern Clipboard API
+            navigator.clipboard.writeText(textToCopy).then(() => {
+                const btn = document.querySelector('.copy-btn');
+                const icon = document.getElementById('copyIcon');
+                
+                // Add the CSS class you already created
+                btn.classList.add('copied');
+                
+                // Swap the icon to a Checkmark
+                icon.innerHTML = '<polyline points="20 6 9 17 4 12"></polyline>';
+                
+                // Revert back after 2 seconds
+                setTimeout(() => {
+                    btn.classList.remove('copied');
+                    icon.innerHTML = '<rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path>';
+                }, 2000);
+            }).catch(err => {
+                console.error('Failed to copy text: ', err);
+                alert("Failed to copy to clipboard.");
+            });
+        }
+    </script>
+</body>
+</html>
